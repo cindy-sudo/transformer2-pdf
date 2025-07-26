@@ -1,82 +1,97 @@
-/* Google Font（在 index.html <head> 加載：link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet") */
+/* ====== 全局字型與背景 ====== */
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap");
+
 body {
   font-family: "Noto Sans TC", sans-serif;
-  background: #F9FAFB;
+  background: #f4f6f9;
   margin: 0;
-  padding: 40px 0;
+  padding: 48px 0;
+  color: #333;
 }
 
-/* ---------- 標題 ---------- */
+/* ====== 標題 ====== */
 h1 {
   text-align: center;
-  color: #333;
-  margin-bottom: 32px;
+  margin: 0 0 32px;
+  font-size: 32px;
   font-weight: 700;
 }
 
-/* ---------- 表單框 ---------- */
+/* ====== 卡片式表單外框 ====== */
 form {
   background: #fff;
-  max-width: 1000px;           /* 版心寬 */
-  width: 90%;
+  width: 92%;
+  max-width: 1000px;             /* 控制卡片最大寬，桌機舒適寬度 */
   margin: 0 auto;
-  padding: 40px 48px;
+  padding: 40px 48px 56px;
   border-radius: 12px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
   box-sizing: border-box;
+  overflow-x: auto;              /* 萬一螢幕太窄可水平捲動 */
 }
 
-/* ---------- 列排版：4欄 Grid ---------- */
+/* ====== 列排版：四欄 Grid ====== */
 .row {
   display: grid;
-  grid-template-columns: 160px 1fr 160px 1fr; /* 標籤寬 160 */
-  column-gap: 24px;
-  row-gap: 20px;
+  grid-template-columns: 150px 1fr 150px 1fr; /* 標籤固定 150 其餘平均 */
+  column-gap: 20px;
+  row-gap: 14px;
   align-items: center;
-  margin-bottom: 8px;
+  margin-bottom: 8px;            /* 行距 */
 }
 
-/* ---------- 標籤 ---------- */
+/* ====== 標籤 ====== */
 label {
   text-align: right;
-  color: #555;
   font-weight: 500;
+  line-height: 34px;             /* 與輸入框高度對齊 */
+  white-space: nowrap;           /* 防止換行 */
+  color: #555;
 }
 
-/* ---------- 輸入框 ---------- */
+/* ====== 輸入框 ====== */
 input[type="text"] {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #D0D5DD;
+  padding: 8px 10px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
-  transition: border 0.2s, box-shadow 0.2s;
   font-size: 15px;
+  transition: border-color 0.18s, box-shadow 0.18s;
+  box-sizing: border-box;
+  min-width: 200px;              /* 避免極窄時過小 */
 }
 
 input[type="text"]:focus {
-  border-color: #3B71CA;
-  box-shadow: 0 0 0 2px rgba(59,113,202,0.25);
+  border-color: #3b71ca;
+  box-shadow: 0 0 0 3px rgba(59, 113, 202, 0.22);
   outline: none;
 }
 
-/* ---------- 按鈕 ---------- */
+/* ====== 送出按鈕 ====== */
 button {
   display: block;
   margin: 40px auto 0;
-  padding: 12px 40px;
-  background: #3B71CA;
+  padding: 12px 48px;
+  font-size: 16px;
+  background: #3b71ca;
   color: #fff;
   border: none;
-  border-radius: 6px;
-  font-size: 16px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.1s;
+  transition: background 0.18s, transform 0.1s;
 }
 
 button:hover {
-  background: #2F5EB1;
+  background: #305fb0;
 }
 
 button:active {
   transform: scale(0.97);
+}
+
+/* ====== 響應式：螢幕小於 768px 時改成兩欄 ====== */
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: 130px 1fr; /* 一行只有標籤＋輸入框 */
+  }
 }
