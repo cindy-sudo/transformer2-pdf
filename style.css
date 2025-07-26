@@ -27,7 +27,7 @@ form {
 .row {
   display: flex;
   flex-wrap: wrap;      /* 小螢幕時自動換行 */
-  gap: 20px;            /* 欄位之間距離 */
+  gap: 40px;            /* 欄位之間距離 */
   margin-bottom: 12px;
 }
 
