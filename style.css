@@ -41,7 +41,7 @@ label {
 /* ========= 輸入框 ========= */
 input[type="text"] {
   flex: 1 1 45%;        /* 左右各占約一半 */
-  min-width: 370px;     /* 防止被壓太窄，可再調 */
+  min-width: 450px;     /* 防止被壓太窄，可再調 */
   padding: 10px;
   box-sizing: border-box;
 }
