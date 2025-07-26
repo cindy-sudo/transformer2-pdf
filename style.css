@@ -1,63 +1,82 @@
-/* ========= 全局字型與背景 ========= */
+/* Google Font（在 index.html <head> 加載：link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet") */
 body {
-  font-family: "微軟正黑體", sans-serif;
-  padding: 23px;
-  background: #f8f8f8;
+  font-family: "Noto Sans TC", sans-serif;
+  background: #F9FAFB;
+  margin: 0;
+  padding: 40px 0;
 }
 
-/* ========= 標題 ========= */
+/* ---------- 標題 ---------- */
 h1 {
   text-align: center;
-  margin-bottom: 20px;
+  color: #333;
+  margin-bottom: 32px;
+  font-weight: 700;
 }
 
-/* ========= 表單外框 ========= */
+/* ---------- 表單框 ---------- */
 form {
   background: #fff;
-  padding: 20px;
-  border: 1px solid #ccc;
-
-  /* 關鍵：寬度與置中 */
-  max-width: 1200px;    /* 你可再改大，例如 1400 */
-  width: 100%;
+  max-width: 1000px;           /* 版心寬 */
+  width: 90%;
   margin: 0 auto;
-}
-
-/* ========= 每一列的排列 ========= */
-.row {
-  display: flex;
-  flex-wrap: wrap;      /* 小螢幕時自動換行 */
-  gap: 40px;            /* 欄位之間距離 */
-  margin-bottom: 12px;
-}
-
-/* ========= 標籤（左側） ========= */
-label {
-  width: 140px;         /* 原 120 → 140，可視情況加大 */
-  text-align: right;
-  line-height: 32px;    /* 與輸入框垂直對齊 */
-}
-
-/* ========= 輸入框 ========= */
-input[type="text"] {
-  flex: 1 1 45%;        /* 左右各占約一半 */
-  min-width: 400px;     /* 防止被壓太窄，可再調 */
-  padding: 15px;
+  padding: 40px 48px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
   box-sizing: border-box;
 }
 
-/* ========= 按鈕 ========= */
+/* ---------- 列排版：4欄 Grid ---------- */
+.row {
+  display: grid;
+  grid-template-columns: 160px 1fr 160px 1fr; /* 標籤寬 160 */
+  column-gap: 24px;
+  row-gap: 20px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+/* ---------- 標籤 ---------- */
+label {
+  text-align: right;
+  color: #555;
+  font-weight: 500;
+}
+
+/* ---------- 輸入框 ---------- */
+input[type="text"] {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #D0D5DD;
+  border-radius: 6px;
+  transition: border 0.2s, box-shadow 0.2s;
+  font-size: 15px;
+}
+
+input[type="text"]:focus {
+  border-color: #3B71CA;
+  box-shadow: 0 0 0 2px rgba(59,113,202,0.25);
+  outline: none;
+}
+
+/* ---------- 按鈕 ---------- */
 button {
   display: block;
-  margin: 30px auto 0;
-  padding: 10px 32px;
-  background: #444;
+  margin: 40px auto 0;
+  padding: 12px 40px;
+  background: #3B71CA;
   color: #fff;
   border: none;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  border-radius: 4px;
+  transition: background 0.2s, transform 0.1s;
 }
 
 button:hover {
-  background: #2d2d2d;
+  background: #2F5EB1;
+}
+
+button:active {
+  transform: scale(0.97);
 }
