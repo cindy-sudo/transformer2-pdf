@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <title>變壓器測試結果計算器 | 萊恩電力</title>
+  <!-- Tailwind CDN，一行就優雅 -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 一點客製：輸入框 & 按鈕外觀統一 */
+    .input {
+      @apply w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-600 focus:outline-none;
+    }
+    .btn {
+      @apply rounded-lg bg-teal-700 px-4 py-2 font-semibold text-white hover:bg-teal-800 active:scale-95;
+    }
+  </style>
+  <script>
+    // —— 絕緣電阻計算 ——
+    function calcIR() {
+      const vKV = parseFloat(document.getElementById('ir_voltage').value);
+      const iUA = parseFloat(document.getElementById('ir_current').value);
+      if (isNaN(vKV) || isNaN(iUA) || iUA === 0) {
+        alert('請輸入有效數字');
+        return;
+      }
+      const resistance = (vKV * 1000) / (iUA * 1e-6); // 單位：Ω
+      const rM = resistance / 1e6; // 轉成 MΩ
+      document.getElementById('ir_result').textContent = rM.toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      });
+
+      const threshold = parseFloat(document.getElementById('ir_threshold').value);
+      document.getElementById('ir_judge').textContent = rM >= threshold ? 'G' : 'NG';
+    }
+
+    // —— 匝比誤差計算 ——
+    function calcTR() {
+      const std = parseFloat(document.getElementById('tr_std').value);
+      const meas = parseFloat(document.getElementById('tr_meas').value);
+      if (isNaN(std) || isNaN(meas) || std === 0) {
+        alert('請輸入有效數字');
+        return;
+      }
+      const errPercent = (Math.abs(meas - std) / std) * 100;
+      document.getElementById('tr_err').textContent = errPercent.toFixed(2);
+      document.getElementById('tr_judge').textContent = errPercent <= 0.5 ? 'G' : 'NG';
+    }
+  </script>
+</head>
+<body class="bg-gray-100 p-6">
+  <div class="mx-auto max-w-3xl space-y-10 rounded-2xl bg-white p-8 shadow-xl">
+    <h1 class="text-3xl font-bold">變壓器測試結果計算器</h1>
+
+    <!-- 絕緣電阻區塊 -->
+    <section>
+      <h2 class="mb-4 text-xl font-semibold text-teal-700">絕緣電阻 (IR)</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block">試驗電壓 (kV)
+          <input id="ir_voltage" type="number" step="0.1" placeholder="例如 12" class="input" />
+        </label>
+        <label class="block">漏洩電流 (µA)
+          <input id="ir_current" type="number" step="0.01" placeholder="例如 0.1" class="input" />
+        </label>
+        <label class="block">判斷門檻 (MΩ)
+          <input id="ir_threshold" type="number" value="1000" class="input" />
+        </label>
+        <div class="flex items-end">
+          <button onclick="calcIR()" class="btn">計算</button>
+        </div>
+      </div>
+      <p class="mt-4 text-lg">絕緣電阻：<span id="ir_result" class="font-bold text-teal-800">--</span> MΩ　→　
+        <span id="ir_judge" class="font-bold">--</span>
+      </p>
+    </section>
+
+    <!-- 匝比誤差區塊 -->
+    <section>
+      <h2 class="mb-4 text-xl font-semibold text-teal-700">匝比 (Turns Ratio)</h2>
+      <div class="grid grid-cols-2 gap-4">
+        <label class="block">標準值
+          <input id="tr_std" type="number" step="0.001" placeholder="例如 9.261" class="input" />
+        </label>
+        <label class="block">量測值
+          <input id="tr_meas" type="number" step="0.001" placeholder="例如 9.266" class="input" />
+        </label>
+        <div class="flex items-end">
+          <button onclick="calcTR()" class="btn">計算</button>
+        </div>
+      </div>
+      <p class="mt-4 text-lg">誤差：<span id="tr_err" class="font-bold text-teal-800">--</span>%　→　
+        <span id="tr_judge" class="font-bold">--</span>
+      </p>
+    </section>
+
+    <!-- 版權 or 其他備註 -->
+    <footer class="pt-6 text-center text-sm text-gray-400">
+      © 2025 萊恩電力股份有限公司
+    </footer>
+  </div>
+</body>
+</html>
