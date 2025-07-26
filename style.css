@@ -1,7 +1,7 @@
 /* ========= 全局字型與背景 ========= */
 body {
   font-family: "微軟正黑體", sans-serif;
-  padding: 20px;
+  padding: 23px;
   background: #f8f8f8;
 }
 
@@ -41,8 +41,8 @@ label {
 /* ========= 輸入框 ========= */
 input[type="text"] {
   flex: 1 1 45%;        /* 左右各占約一半 */
-  min-width: 450px;     /* 防止被壓太窄，可再調 */
-  padding: 10px;
+  min-width: 400px;     /* 防止被壓太窄，可再調 */
+  padding: 15px;
   box-sizing: border-box;
 }
 
