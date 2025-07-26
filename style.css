@@ -1,7 +1,7 @@
 
 body {
   font-family: "微軟正黑體", sans-serif;
-  padding: 20px;
+  padding: 25px;
   background: #f8f8f8;
 }
 
@@ -18,7 +18,7 @@ form {
 .row {
   display: flex;
   margin-bottom: 10px;
-  gap: 20px;
+  gap: 25px;
 }
 
 label {
