@@ -1,0 +1,38 @@
+
+body {
+  font-family: "微軟正黑體", sans-serif;
+  padding: 20px;
+  background: #f8f8f8;
+}
+
+h1 {
+  text-align: center;
+}
+
+form {
+  background: #fff;
+  padding: 20px;
+  border: 1px solid #ccc;
+}
+
+.row {
+  display: flex;
+  margin-bottom: 10px;
+  gap: 10px;
+}
+
+label {
+  width: 120px;
+  text-align: right;
+}
+
+input[type="text"] {
+  flex: 1;
+  padding: 5px;
+}
+
+button {
+  display: block;
+  margin: 20px auto 0;
+  padding: 10px 20px;
+}
