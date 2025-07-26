@@ -2,100 +2,160 @@
 <html lang="zh-Hant">
 <head>
   <meta charset="utf-8" />
-  <title>變壓器測試結果計算器 | 萊恩電力</title>
-  <!-- Tailwind CDN，一行就優雅 -->
+  <title>變壓器測試報告產生器 | 萊恩電力</title>
+  <!-- Tailwind CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tesseract.js for OCR -->
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5.0.0/dist/tesseract.min.js"></script>
+  <!-- html2canvas + jsPDF for PDF export -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
-    /* 一點客製：輸入框 & 按鈕外觀統一 */
-    .input {
-      @apply w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-teal-600 focus:outline-none;
-    }
-    .btn {
-      @apply rounded-lg bg-teal-700 px-4 py-2 font-semibold text-white hover:bg-teal-800 active:scale-95;
+    @layer components {
+      .input { @apply w-full rounded-lg border border-gray-300 bg-white/90 px-3 py-2 text-sm shadow-sm focus:border-teal-600 focus:ring-2 focus:ring-teal-300; }
+      .btn   { @apply inline-flex items-center justify-center gap-2 rounded-lg bg-gradient-to-br from-teal-600 to-teal-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg hover:from-teal-700 hover:to-teal-800 active:scale-95 disabled:opacity-50; }
+      .badge { @apply inline-block min-w-[3rem] rounded-full px-2 py-0.5 text-center text-sm font-semibold; }
+      table.pdf  { width: 100%; border-collapse: collapse; font-size: 11pt; }
+      table.pdf th, table.pdf td { border: 1px solid #000; padding: 4px; text-align: center; }
     }
   </style>
-  <script>
-    // —— 絕緣電阻計算 ——
-    function calcIR() {
-      const vKV = parseFloat(document.getElementById('ir_voltage').value);
-      const iUA = parseFloat(document.getElementById('ir_current').value);
-      if (isNaN(vKV) || isNaN(iUA) || iUA === 0) {
-        alert('請輸入有效數字');
-        return;
-      }
-      const resistance = (vKV * 1000) / (iUA * 1e-6); // 單位：Ω
-      const rM = resistance / 1e6; // 轉成 MΩ
-      document.getElementById('ir_result').textContent = rM.toLocaleString(undefined, {
-        maximumFractionDigits: 0,
-      });
-
-      const threshold = parseFloat(document.getElementById('ir_threshold').value);
-      document.getElementById('ir_judge').textContent = rM >= threshold ? 'G' : 'NG';
-    }
-
-    // —— 匝比誤差計算 ——
-    function calcTR() {
-      const std = parseFloat(document.getElementById('tr_std').value);
-      const meas = parseFloat(document.getElementById('tr_meas').value);
-      if (isNaN(std) || isNaN(meas) || std === 0) {
-        alert('請輸入有效數字');
-        return;
-      }
-      const errPercent = (Math.abs(meas - std) / std) * 100;
-      document.getElementById('tr_err').textContent = errPercent.toFixed(2);
-      document.getElementById('tr_judge').textContent = errPercent <= 0.5 ? 'G' : 'NG';
-    }
-  </script>
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="mx-auto max-w-3xl space-y-10 rounded-2xl bg-white p-8 shadow-xl">
-    <h1 class="text-3xl font-bold">變壓器測試結果計算器</h1>
+<body class="bg-gray-100 py-10">
+  <main class="mx-auto w-full max-w-5xl space-y-10 rounded-3xl bg-white/90 p-10 shadow-2xl">
+    <h1 class="mb-4 text-center text-3xl font-extrabold text-gray-800">變壓器測試報告產生器</h1>
 
-    <!-- 絕緣電阻區塊 -->
-    <section>
-      <h2 class="mb-4 text-xl font-semibold text-teal-700">絕緣電阻 (IR)</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <label class="block">試驗電壓 (kV)
-          <input id="ir_voltage" type="number" step="0.1" placeholder="例如 12" class="input" />
-        </label>
-        <label class="block">漏洩電流 (µA)
-          <input id="ir_current" type="number" step="0.01" placeholder="例如 0.1" class="input" />
-        </label>
-        <label class="block">判斷門檻 (MΩ)
-          <input id="ir_threshold" type="number" value="1000" class="input" />
-        </label>
-        <div class="flex items-end">
-          <button onclick="calcIR()" class="btn">計算</button>
-        </div>
+    <!-- 基本資訊 -->
+    <section class="space-y-6 rounded-2xl border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-teal-700">基本資料</h2>
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <label class="space-y-1"><span class="text-sm font-medium">客戶</span><input id="client" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">試驗日期</span><input id="test_date" type="date" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">試驗地點</span><input id="site" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">製造廠</span><input id="maker" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">製造型式</span><input id="model_type" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">製造編號</span><input id="serial_no" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">製造日期</span><input id="mfg_date" class="input" placeholder="YYYY.MM"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">盤面名稱</span><input id="panel_name" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">一次電壓(流)</span><input id="v1" class="input" placeholder="22800V / ?A"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">二次電壓(流)</span><input id="v2" class="input" placeholder="4264V / ?A"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">容量</span><input id="capacity" class="input" placeholder="7500kVA"></label>
       </div>
-      <p class="mt-4 text-lg">絕緣電阻：<span id="ir_result" class="font-bold text-teal-800">--</span> MΩ　→　
-        <span id="ir_judge" class="font-bold">--</span>
-      </p>
     </section>
 
-    <!-- 匝比誤差區塊 -->
-    <section>
-      <h2 class="mb-4 text-xl font-semibold text-teal-700">匝比 (Turns Ratio)</h2>
-      <div class="grid grid-cols-2 gap-4">
-        <label class="block">標準值
-          <input id="tr_std" type="number" step="0.001" placeholder="例如 9.261" class="input" />
-        </label>
-        <label class="block">量測值
-          <input id="tr_meas" type="number" step="0.001" placeholder="例如 9.266" class="input" />
-        </label>
-        <div class="flex items-end">
-          <button onclick="calcTR()" class="btn">計算</button>
-        </div>
-      </div>
-      <p class="mt-4 text-lg">誤差：<span id="tr_err" class="font-bold text-teal-800">--</span>%　→　
-        <span id="tr_judge" class="font-bold">--</span>
-      </p>
+    <!-- 圖片 OCR 上傳 -->
+    <section class="space-y-4 rounded-2xl border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-teal-700">圖片上傳 → OCR</h2>
+      <input id="imgInput" type="file" accept="image/*" class="input" />
+      <progress id="ocrProgress" value="0" max="1" class="hidden h-2 w-full"></progress>
+      <pre id="ocrText" class="max-h-40 overflow-auto rounded bg-gray-100 p-2 text-xs"></pre>
     </section>
 
-    <!-- 版權 or 其他備註 -->
-    <footer class="pt-6 text-center text-sm text-gray-400">
-      © 2025 萊恩電力股份有限公司
-    </footer>
+    <!-- 絕緣電阻 (IR) -->
+    <section class="space-y-6 rounded-2xl border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-teal-700">絕緣電阻 (IR)</h2>
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <label class="space-y-1"><span class="text-sm font-medium">試驗電壓 (kV)</span><input id="ir_voltage" type="number" step="0.1" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">漏洩電流 (µA)</span><input id="ir_current" type="number" step="0.01" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">門檻 (MΩ)</span><input id="ir_threshold" type="number" value="1000" class="input"></label>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button onclick="calcIR()" class="btn">計算 IR</button>
+        <p class="text-lg">結果：<span id="ir_result" class="font-bold text-teal-800">--</span> MΩ → <span id="ir_judge" class="badge bg-gray-300 text-gray-700">--</span></p>
+      </div>
+    </section>
+
+    <!-- 匝比 (TR) -->
+    <section class="space-y-6 rounded-2xl border border-gray-200 p-6">
+      <h2 class="text-xl font-semibold text-teal-700">匝比 (Turns Ratio)</h2>
+      <div class="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <label class="space-y-1"><span class="text-sm font-medium">標準值</span><input id="tr_std" type="number" step="0.001" class="input"></label>
+        <label class="space-y-1"><span class="text-sm font-medium">量測值</span><input id="tr_meas" type="number" step="0.001" class="input"></label>
+      </div>
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <button onclick="calcTR()" class="btn">計算匝比</button>
+        <p class="text-lg">誤差：<span id="tr_err" class="font-bold text-teal-800">--</span>% → <span id="tr_judge" class="badge bg-gray-300 text-gray-700">--</span></p>
+      </div>
+    </section>
+
+    <!-- 匯出 PDF 按鈕 -->
+    <div class="text-center">
+      <button onclick="exportPdf()" class="btn bg-indigo-600 hover:bg-indigo-700">匯出 PDF 報告</button>
+    </div>
+  </main>
+
+  <!-- 隱藏 PDF 版面 (A4、794px 寬) -->
+  <div id="pdfTemplate" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-white">
+    <div id="pdfPage" class="w-[794px] p-4">
+      <h2 class="mb-2 text-center text-lg font-bold">變壓器測試報告</h2>
+      <table class="pdf">
+        <tr><th>客戶</th><td id="pdf_client"></td><th>試驗日期</th><td id="pdf_test_date"></td></tr>
+        <tr><th>試驗地點</th><td id="pdf_site"></td><th>盤面名稱</th><td id="pdf_panel"></td></tr>
+        <tr><th>製造廠</th><td id="pdf_maker"></td><th>製造型式</th><td id="pdf_model_type"></td></tr>
+        <tr><th>製造編號</th><td id="pdf_sn"></td><th>製造日期</th><td id="pdf_mfg_date"></td></tr>
+        <tr><th>容量</th><td id="pdf_cap"></td><th>一次 / 二次電壓</th><td id="pdf_v12"></td></tr>
+      </table>
+      <br>
+      <table class="pdf">
+        <tr><th colspan="4">絕緣電阻‧耐壓試驗</th></tr>
+        <tr><th>試驗電壓(kV)</th><th>漏洩電流 30s(µA)</th><th>漏洩電流 60s(µA)</th><th>絕緣電阻(MΩ)</th></tr>
+        <tr><td id="pdf_ir_v"></td><td id="pdf_leak30"></td><td id="pdf_leak60"></td><td id="pdf_ir"></td></tr>
+        <tr><td colspan="4">判定：<span id="pdf_ir_judge"></span></td></tr>
+      </table>
+      <br>
+      <table class="pdf">
+        <tr><th colspan="4">匝比試驗</th></tr>
+        <tr><th>標準值</th><th>量測值</th><th>誤差%</th><th>判定</th></tr>
+        <tr><td id="pdf_tr_std"></td><td id="pdf_tr_meas"></td><td id="pdf_tr_err"></td><td id="pdf_tr_judge"></td></tr>
+      </table>
+      <p class="mt-2 text-xs italic">*36kV 持壓 1 分鐘無異常；匝比誤差須≤±0.5%</p>
+    </div>
   </div>
-</body>
-</html>
+
+<script>
+  /* ========= 計算 ========= */
+  function calcIR(){
+    const v = parseFloat(ir_voltage.value);
+    const i = parseFloat(ir_current.value);
+    if(isNaN(v)||isNaN(i)||i===0){alert('請輸入有效數字');return;}
+    const rM = (v*1000)/(i*1e-6)/1e6;
+    ir_result.textContent = Math.round(rM).toLocaleString();
+    const judge = rM >= parseFloat(ir_threshold.value||0)?'G':'NG';
+    ir_judge.textContent = judge;
+    ir_judge.className = `badge ${judge==='G'?'bg-emerald-500 text-white':'bg-rose-500 text-white'}`;
+  }
+  function calcTR(){
+    const std = parseFloat(tr_std.value); const meas = parseFloat(tr_meas.value);
+    if(isNaN(std)||isNaN(meas)||std===0){alert('請輸入有效數字');return;}
+    const err = Math.abs(meas-std)/std*100;
+    tr_err.textContent = err.toFixed(2);
+    const judge = err<=0.5?'G':'NG';
+    tr_judge.textContent = judge;
+    tr_judge.className = `badge ${judge==='G'?'bg-emerald-500 text-white':'bg-rose-500 text-white'}`;
+  }
+
+  /* ========= OCR ========= */
+  const ocrOpts={langPath:'https://tessdata.projectnaptha.com/5',tessedit_pageseg_mode:6,tessedit_char_whitelist:'0123456789.kVuAm%'};
+  imgInput.addEventListener('change',async e=>{
+    const f=e.target.files[0];if(!f)return;
+    ocrProgress.classList.remove('hidden');ocrProgress.value=0;
+    const {data}=await Tesseract.recognize(f,'chi_tra+eng',{...ocrOpts,logger:m=>{if(m.status==='recognizing text')ocrProgress.value=m.progress}});
+    ocrProgress.classList.add('hidden');ocrText.textContent=data.text;
+    // 範例 regex，可依實際修改
+    const leakM=data.text.match(/([0-9\.]+)\s+[0-9\.]+\s+([0-9\.]+)/);
+    if(leakM){ir_current.value=leakM[1];calcIR();}
+  });
+
+  /* ========= PDF ========= */
+  async function exportPdf(){
+    fillPdfTemplate();
+    pdfTemplate.classList.remove('hidden');
+    const canvas=await html2canvas(pdfPage,{scale:2});
+    const img=canvas.toDataURL('image/png');
+    const{jsPDF}=window.jspdf;const doc=new jsPDF({unit:'pt',format:'a4'});
+    const ratio=canvas.height/canvas.width;doc.addImage(img,'PNG',0,0,595,595*ratio);
+    doc.save('transformer_report.pdf');
+    pdfTemplate.classList.add('hidden');
+  }
+  function fillPdfTemplate(){
+    pdf_client.textContent=client.value;
+    pdf_test_date.textContent=test
