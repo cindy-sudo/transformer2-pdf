@@ -1,38 +1,63 @@
-
+/* ========= 全局字型與背景 ========= */
 body {
   font-family: "微軟正黑體", sans-serif;
-  padding: 25px;
+  padding: 20px;
   background: #f8f8f8;
 }
 
+/* ========= 標題 ========= */
 h1 {
   text-align: center;
+  margin-bottom: 20px;
 }
 
+/* ========= 表單外框 ========= */
 form {
   background: #fff;
-  padding: 25px;
+  padding: 20px;
   border: 1px solid #ccc;
+
+  /* 關鍵：寬度與置中 */
+  max-width: 1200px;    /* 你可再改大，例如 1400 */
+  width: 100%;
+  margin: 0 auto;
 }
 
+/* ========= 每一列的排列 ========= */
 .row {
   display: flex;
-  margin-bottom: 10px;
-  gap: 25px;
+  flex-wrap: wrap;      /* 小螢幕時自動換行 */
+  gap: 20px;            /* 欄位之間距離 */
+  margin-bottom: 12px;
 }
 
+/* ========= 標籤（左側） ========= */
 label {
-  width: 120px;
+  width: 140px;         /* 原 120 → 140，可視情況加大 */
   text-align: right;
+  line-height: 32px;    /* 與輸入框垂直對齊 */
 }
 
+/* ========= 輸入框 ========= */
 input[type="text"] {
-  flex: 1;
-  padding: 5px;
+  flex: 1 1 45%;        /* 左右各占約一半 */
+  min-width: 350px;     /* 防止被壓太窄，可再調 */
+  padding: 6px;
+  box-sizing: border-box;
 }
 
+/* ========= 按鈕 ========= */
 button {
   display: block;
-  margin: 20px auto 0;
-  padding: 10px 20px;
+  margin: 30px auto 0;
+  padding: 10px 32px;
+  background: #444;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+button:hover {
+  background: #2d2d2d;
 }
