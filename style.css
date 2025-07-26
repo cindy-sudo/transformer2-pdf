@@ -11,14 +11,14 @@ h1 {
 
 form {
   background: #fff;
-  padding: 20px;
+  padding: 25px;
   border: 1px solid #ccc;
 }
 
 .row {
   display: flex;
   margin-bottom: 10px;
-  gap: 10px;
+  gap: 20px;
 }
 
 label {
