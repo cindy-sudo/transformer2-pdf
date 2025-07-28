@@ -11,9 +11,6 @@
     body { font-family: "Noto Sans TC", sans-serif; }
     .table-bordered th,
     .table-bordered td { border: 1px solid black; }
-    
-    input::placeholder{
-    color: transparent;   /* 讓提示字整個隱形 */
   </style>
 </head>
 
@@ -21,49 +18,20 @@
   <div id="report" class="bg-white p-8 max-w-4xl mx-auto shadow-lg">
     <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
 
-    <!-- ★ 基本資料區：全部 placeholder 改成通用提示或直接移除 -->
-<!-- 基本資料區（無任何 placeholder）-->
-<div class="grid grid-cols-2 gap-4 text-sm">
-  <div>客戶：
-    <input id="client" class="border w-full locked-field" readonly>
-  </div>
-  <div>試驗日期：
-    <input id="test_date" class="border w-full locked-field" readonly>
-  </div>
-
-  <div>試驗地點：
-    <input id="test_location" class="border w-full locked-field" readonly>
-  </div>
-  <div>盤面名稱：
-    <input id="panel_name" class="border w-full locked-field" readonly>
-  </div>
-
-  <div>製造廠：
-    <input id="manufacturer" class="border w-full locked-field" readonly>
-  </div>
-  <div>一次電壓(流)：
-    <input id="primary_voltage" class="border w-full">
-  </div>
-
-  <div>製品型式：
-    <input id="model_type" class="border w-full">
-  </div>
-  <div>二次電壓(流)：
-    <input id="secondary_voltage" class="border w-full">
-  </div>
-
-  <div>製造編號：
-    <input id="serial_number" class="border w-full">
-  </div>
-  <div>容量：
-    <input id="capacity" class="border w-full">
-  </div>
-
-  <div>製造日期：
-    <input id="manufacture_date" class="border w-full">
-  </div>
-</div>
-
+    <!-- ★ 基本資料區：預設值拿掉並加 id -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>客戶：<input id="client"            class="border w-full" placeholder="(如：XXX)"          ></div>
+      <div>試驗日期：<input id="test_date"       class="border w-full" placeholder="YYYY.MM.DD"           ></div>
+      <div>試驗地點：<input id="test_location"   class="border w-full" placeholder="(如：XXX)"             ></div>
+      <div>盤面名稱：<input id="panel_name"      class="border w-full" placeholder="(如：XXXXX-XXXX-XXX)"></div>
+      <div>製造廠：<input id="manufacturer"    class="border w-full" placeholder="(如：ABB)"              ></div>
+      <div>一次電壓(流)：<input id="primary_voltage" class="border w-full" placeholder="(如：22800V △接)"></div>
+      <div>製品型式：<input id="model_type"     class="border w-full" placeholder="(如：XX變壓器)"></div>
+      <div>二次電壓(流)：<input id="secondary_voltage" class="border w-full" placeholder="(如：4264V Y接)"></div>
+      <div>製造編號：<input id="serial_number"  class="border w-full" placeholder="序號"></div>
+      <div>容量：<input id="capacity"         class="border w-full" placeholder="(如：7500 kVA)"></div>
+      <div>製造日期：<input id="manufacture_date" class="border w-full" placeholder="YYYY.MM"></div>
+    </div>
 
     <h2 class="text-xl font-semibold mt-6 mb-2">絕緣電阻、耐壓特性試驗</h2>
 
