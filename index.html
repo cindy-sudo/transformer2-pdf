@@ -19,12 +19,27 @@
     <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
 
     <!-- ★ 基本資料區：預設值拿掉並加 id -->
-    <div class="grid grid-cols-2 gap-4 text-sm">
-      <div>客戶：<input id="client"            class="border w-full" placeholder="(如：XXX)"          ></div>
-      <div>試驗日期：<input id="test_date"       class="border w-full" placeholder="YYYY.MM.DD"           ></div>
-      <div>試驗地點：<input id="test_location"   class="border w-full" placeholder="(如：XXX)"             ></div>
-      <div>盤面名稱：<input id="panel_name"      class="border w-full" placeholder="(如：XXXXX-XXXX-XXX)"></div>
-      <div>製造廠：<input id="manufacturer"    class="border w-full" placeholder="(如：ABB)"              ></div>
+    <div class="grid grid-cols-2 gap-6 text-sm">
+      <div class="grid grid-cols-2 gap-6 text-sm">
+  <div>客戶：
+    <!-- 從 locked-field + readonly 改成一般輸入框 -->
+    <input id="client" class="border w-full">
+  </div>
+  <div>試驗日期：
+    <input id="test_date" class="border w-full">
+  </div>
+
+  <div>試驗地點：
+    <input id="test_location" class="border w-full">
+  </div>
+  <div>盤面名稱：
+    <input id="panel_name" class="border w-full">
+  </div>
+
+  <div>製造廠：
+    <input id="manufacturer" class="border w-full">
+  </div>
+
       <div>一次電壓(流)：<input id="primary_voltage" class="border w-full" placeholder="(如：22800V △接)"></div>
       <div>製品型式：<input id="model_type"     class="border w-full" placeholder="(如：XX變壓器)"></div>
       <div>二次電壓(流)：<input id="secondary_voltage" class="border w-full" placeholder="(如：4264V Y接)"></div>
