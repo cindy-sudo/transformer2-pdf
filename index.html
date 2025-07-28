@@ -1,19 +1,30 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
   <meta charset="UTF-8" />
   <title>變壓器測試報告產出</title>
+
+  <!-- 依賴的 JS / CSS -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- 樣式 -->
   <style>
     body { font-family: "Noto Sans TC", sans-serif; }
+
     .table-bordered th,
     .table-bordered td { border: 1px solid black; }
-    
-    input::placeholder{
-    color: transparent;   /* 讓提示字整個隱形 */
+
+    /* 讓 placeholder 完全看不見 */
+    input::placeholder { color: transparent; }
+
+    /* 鎖定欄位外觀（邊框透明、背景透明）*/
+    .locked-field[readonly]{
+      border: none;
+      background-color: transparent;
+      padding-left: 0;
+    }
   </style>
 </head>
 
@@ -21,55 +32,53 @@
   <div id="report" class="bg-white p-8 max-w-4xl mx-auto shadow-lg">
     <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
 
-    <!-- ★ 基本資料區：全部 placeholder 改成通用提示或直接移除 -->
-<!-- 基本資料區（無任何 placeholder）-->
-<div class="grid grid-cols-2 gap-4 text-sm">
-  <div>客戶：
-    <input id="client" class="border w-full locked-field" readonly>
-  </div>
-  <div>試驗日期：
-    <input id="test_date" class="border w-full locked-field" readonly>
-  </div>
+    <!-- === 基本資料區 === -->
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>客戶：
+        <input id="client" class="border w-full locked-field" readonly>
+      </div>
+      <div>試驗日期：
+        <input id="test_date" class="border w-full locked-field" readonly>
+      </div>
 
-  <div>試驗地點：
-    <input id="test_location" class="border w-full locked-field" readonly>
-  </div>
-  <div>盤面名稱：
-    <input id="panel_name" class="border w-full locked-field" readonly>
-  </div>
+      <div>試驗地點：
+        <input id="test_location" class="border w-full locked-field" readonly>
+      </div>
+      <div>盤面名稱：
+        <input id="panel_name" class="border w-full locked-field" readonly>
+      </div>
 
-  <div>製造廠：
-    <input id="manufacturer" class="border w-full locked-field" readonly>
-  </div>
-  <div>一次電壓(流)：
-    <input id="primary_voltage" class="border w-full">
-  </div>
+      <div>製造廠：
+        <input id="manufacturer" class="border w-full locked-field" readonly>
+      </div>
+      <div>一次電壓(流)：
+        <input id="primary_voltage" class="border w-full">
+      </div>
 
-  <div>製品型式：
-    <input id="model_type" class="border w-full">
-  </div>
-  <div>二次電壓(流)：
-    <input id="secondary_voltage" class="border w-full">
-  </div>
+      <div>製品型式：
+        <input id="model_type" class="border w-full">
+      </div>
+      <div>二次電壓(流)：
+        <input id="secondary_voltage" class="border w-full">
+      </div>
 
-  <div>製造編號：
-    <input id="serial_number" class="border w-full">
-  </div>
-  <div>容量：
-    <input id="capacity" class="border w-full">
-  </div>
+      <div>製造編號：
+        <input id="serial_number" class="border w-full">
+      </div>
+      <div>容量：
+        <input id="capacity" class="border w-full">
+      </div>
 
-  <div>製造日期：
-    <input id="manufacture_date" class="border w-full">
-  </div>
-</div>
+      <div>製造日期：
+        <input id="manufacture_date" class="border w-full">
+      </div>
+    </div>
 
-
+    <!-- === 試驗表格 === -->
     <h2 class="text-xl font-semibold mt-6 mb-2">絕緣電阻、耐壓特性試驗</h2>
 
-    <!-- 以下試驗表若也要一開始全空，把 value 刪掉即可 -->
     <div class="overflow-x-auto text-sm">
-      <!-- 變壓器一次測試 -->
+      <!-- 一次測試 -->
       <table class="table-auto w-full table-bordered text-center">
         <thead>
           <tr><th colspan="5">變壓器一次測試</th></tr>
@@ -99,7 +108,7 @@
         </tbody>
       </table>
 
-      <!-- 變壓器二次測試 -->
+      <!-- 二次測試 -->
       <table class="table-auto w-full table-bordered text-center mt-6">
         <thead>
           <tr><th colspan="5">變壓器二次測試</th></tr>
@@ -130,19 +139,21 @@
       </table>
     </div>
 
-    <p class="text-xs mt-4">
+    <p class="text-xs mt-4 leading-relaxed">
       *36 kV 持壓一分鐘無異常<br>
       *高壓側絕緣電阻 &gt; 1000 MΩ 屬良好<br>
       *低壓側絕緣電阻 &gt; 500 MΩ 屬良好
     </p>
   </div>
 
+  <!-- 下載 PDF 按鈕 -->
   <div class="text-center mt-6">
     <button onclick="generatePDF()" class="rounded bg-teal-600 px-6 py-2 font-medium text-white hover:bg-teal-700">
-      下載 PDF
+      下載 PDF
     </button>
   </div>
 
+  <!-- 產生 PDF -->
   <script>
     async function generatePDF () {
       const { jsPDF } = window.jspdf;
