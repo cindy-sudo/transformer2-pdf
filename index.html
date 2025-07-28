@@ -1,142 +1,160 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
-
 <head>
-  <meta charset="UTF-8" />
-  <title>變壓器測試報告產出</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    body { font-family: "Noto Sans TC", sans-serif; }
-    .table-bordered th,
-    .table-bordered td { border: 1px solid black; }
-  </style>
+<meta charset="UTF-8" />
+<title>變壓器測試報告產出</title>
+
+<!-- 依賴 -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<style>
+  body { font-family: "Noto Sans TC", sans-serif; }
+  .table-bordered th, .table-bordered td { border: 1px solid black; }
+
+  /* ★ 讓 placeholder 隱形（可保留或移除）*/
+  input::placeholder { color: transparent; }
+
+  /* ★ 撐住表格：單詞太長就換行 */
+  .break-word { word-break: break-all; white-space: pre-wrap; }
+</style>
 </head>
 
 <body class="bg-gray-100 p-4">
-  <div id="report" class="bg-white p-8 max-w-4xl mx-auto shadow-lg">
-    <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
+<div id="report" class="bg-white p-8 max-w-5xl mx-auto shadow-lg">  <!-- ★ max-w 變 5xl -->
+  <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
 
-    <!-- ★ 基本資料區：預設值拿掉並加 id -->
-    <div class="grid grid-cols-2 gap-6 text-sm">
-      <div class="grid grid-cols-2 gap-6 text-sm">
-  <div>客戶：
-    <!-- 從 locked-field + readonly 改成一般輸入框 -->
-    <input id="client" class="border w-full">
-  </div>
-  <div>試驗日期：
-    <input id="test_date" class="border w-full">
-  </div>
+  <!-- === 基本資料 === -->
+  <div class="grid grid-cols-[180px_1fr_180px_1fr] gap-x-6 gap-y-4 text-sm"> <!-- ★ 四欄網格，左標 180px -->
+    <div>客戶：</div>          <div><input id="client" class="border w-full break-word"></div>
+    <div>試驗日期：</div>      <div><input id="test_date" class="border w-full"></div>
 
-  <div>試驗地點：
-    <input id="test_location" class="border w-full">
-  </div>
-  <div>盤面名稱：
-    <input id="panel_name" class="border w-full">
-  </div>
+    <div>試驗地點：</div>      <div><input id="test_location" class="border w-full break-word"></div>
+    <div>盤面名稱：</div>      <div><input id="panel_name" class="border w-full break-word"></div>
 
-  <div>製造廠：
-    <input id="manufacturer" class="border w-full">
+    <div>製造廠：</div>        <div><input id="manufacturer" class="border w-full break-word"></div>
+    <div>一次電壓(流)：</div> <div><input id="primary_voltage" class="border w-full"></div>
+
+    <div>製品型式：</div>      <div><input id="model_type" class="border w-full break-word"></div>
+    <div>二次電壓(流)：</div> <div><input id="secondary_voltage" class="border w-full"></div>
+
+    <div>製造編號：</div>      <div><input id="serial_number" class="border w-full break-word"></div>
+    <div>容量：</div>          <div><input id="capacity" class="border w-full"></div>
+
+    <div>製造日期：</div>      <div><input id="manufacture_date" class="border w-full"></div>
   </div>
 
-      <div>一次電壓(流)：<input id="primary_voltage" class="border w-full" placeholder="(如：22800V △接)"></div>
-      <div>製品型式：<input id="model_type"     class="border w-full" placeholder="(如：XX變壓器)"></div>
-      <div>二次電壓(流)：<input id="secondary_voltage" class="border w-full" placeholder="(如：4264V Y接)"></div>
-      <div>製造編號：<input id="serial_number"  class="border w-full" placeholder="序號"></div>
-      <div>容量：<input id="capacity"         class="border w-full" placeholder="(如：7500 kVA)"></div>
-      <div>製造日期：<input id="manufacture_date" class="border w-full" placeholder="YYYY.MM"></div>
-    </div>
+  <!-- === 試驗表格 === -->
+  <h2 class="text-xl font-semibold mt-6 mb-2">絕緣電阻、耐壓特性試驗</h2>
 
-    <h2 class="text-xl font-semibold mt-6 mb-2">絕緣電阻、耐壓特性試驗</h2>
+  <div class="overflow-x-auto text-sm">
+    <!-- ★ colgroup 固定欄寬；table-fixed 防止被撐爆 -->
+    <table class="table-fixed w-full table-bordered text-center">
+      <colgroup>
+        <col style="width:80px"><col style="width:110px"><col style="width:110px">
+        <col style="width:130px"><col style="width:80px">
+      </colgroup>
 
-    <!-- 以下試驗表若也要一開始全空，把 value 刪掉即可 -->
-    <div class="overflow-x-auto text-sm">
-      <!-- 變壓器一次測試 -->
-      <table class="table-auto w-full table-bordered text-center">
-        <thead>
-          <tr><th colspan="5">變壓器一次測試</th></tr>
-          <tr>
-            <th>試驗電壓(kV)</th><th>洩漏電流(30秒)</th>
-            <th>洩漏電流(60秒)</th><th>絕緣電阻(MΩ)</th><th>判定</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>12</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-            <td rowspan="3"><input class="border w-24 text-center"></td>
-            <td rowspan="3"></td>
-          </tr>
-          <tr>
-            <td>24</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-          </tr>
-          <tr>
-            <td>36</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-          </tr>
-        </tbody>
-      </table>
+      <thead>
+        <tr><th colspan="5">變壓器一次測試</th></tr>
+        <tr>
+          <th>試驗電壓<br>(kV)</th>
+          <th>洩漏電流<br>30 s</th>
+          <th>洩漏電流<br>60 s</th>
+          <th>絕緣電阻<br>(MΩ)</th>
+          <th>判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- ★ data-row=primary 方便 JS 取值 -->
+        <tr data-row="primary">
+          <td>12</td>
+          <td><input class="border w-20 text-center"></td>
+          <td><input class="border w-20 text-center"></td>
+          <td><input class="border w-28 text-center" data-type="resistance"></td>
+          <td><button class="btn-judge bg-sky-600 text-white px-3 py-1 rounded">計算</button></td>
+        </tr>
+        <tr>
+          <td>24</td><td colspan="4"></td>
+        </tr>
+        <tr>
+          <td>36</td><td colspan="4"></td>
+        </tr>
+      </tbody>
+    </table>
 
-      <!-- 變壓器二次測試 -->
-      <table class="table-auto w-full table-bordered text-center mt-6">
-        <thead>
-          <tr><th colspan="5">變壓器二次測試</th></tr>
-          <tr>
-            <th>試驗電壓(kV)</th><th>洩漏電流(30秒)</th>
-            <th>洩漏電流(60秒)</th><th>絕緣電阻(MΩ)</th><th>判定</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>1.2</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-            <td rowspan="3"><input class="border w-24 text-center"></td>
-            <td rowspan="3"></td>
-          </tr>
-          <tr>
-            <td>2.4</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-          </tr>
-          <tr>
-            <td>3.6</td>
-            <td><input class="border w-16 text-center"></td>
-            <td><input class="border w-16 text-center"></td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <!-- 二次測試 -->
+    <table class="table-fixed w-full table-bordered text-center mt-6">
+      <colgroup>
+        <col style="width:80px"><col style="width:110px"><col style="width:110px">
+        <col style="width:130px"><col style="width:80px">
+      </colgroup>
 
-    <p class="text-xs mt-4">
-      *36 kV 持壓一分鐘無異常<br>
-      *高壓側絕緣電阻 &gt; 1000 MΩ 屬良好<br>
-      *低壓側絕緣電阻 &gt; 500 MΩ 屬良好
-    </p>
+      <thead>
+        <tr><th colspan="5">變壓器二次測試</th></tr>
+        <tr>
+          <th>試驗電壓<br>(kV)</th>
+          <th>洩漏電流<br>30 s</th>
+          <th>洩漏電流<br>60 s</th>
+          <th>絕緣電阻<br>(MΩ)</th>
+          <th>判定</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr data-row="secondary">
+          <td>1.2</td>
+          <td><input class="border w-20 text-center"></td>
+          <td><input class="border w-20 text-center"></td>
+          <td><input class="border w-28 text-center" data-type="resistance"></td>
+          <td><button class="btn-judge bg-sky-600 text-white px-3 py-1 rounded">計算</button></td>
+        </tr>
+        <tr>
+          <td>2.4</td><td colspan="4"></td>
+        </tr>
+        <tr>
+          <td>3.6</td><td colspan="4"></td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 
-  <div class="text-center mt-6">
-    <button onclick="generatePDF()" class="rounded bg-teal-600 px-6 py-2 font-medium text-white hover:bg-teal-700">
-      下載 PDF
-    </button>
-  </div>
+  <p class="text-xs mt-4 leading-relaxed">
+    *36 kV 持壓一分鐘無異常<br>
+    *高壓側絕緣電阻 &gt; 1000 MΩ 屬良好<br>
+    *低壓側絕緣電阻 &gt; 500 MΩ 屬良好
+  </p>
+</div>
 
-  <script>
-    async function generatePDF () {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF("p", "pt", "a4");
-      const report = document.getElementById("report");
+<!-- === 操作按鈕 === -->
+<div class="text-center mt-6 space-x-4">
+  <button onclick="generatePDF()" class="rounded bg-teal-600 px-6 py-2 font-medium text-white hover:bg-teal-700">
+    下載 PDF
+  </button>
+</div>
 
-      const canvas = await html2canvas(report, { scale: 2 });
-      const imgData = canvas.toDataURL("image/png");
-      doc.addImage(imgData, "PNG", 20, 20, 555, 0);
-      doc.save("變壓器測試報告.pdf");
-    }
-  </script>
+<!-- === JS === -->
+<script>
+/* 1) 下載 PDF */
+async function generatePDF () {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF("p", "pt", "a4");
+  const canvas = await html2canvas(document.getElementById("report"), { scale: 2 });
+  doc.addImage(canvas.toDataURL("image/png"), "PNG", 20, 20, 555, 0);
+  doc.save("變壓器測試報告.pdf");
+}
+
+/* 2) 判定按鈕：resistance >= 門檻 ? G : NG */
+document.querySelectorAll(".btn-judge").forEach(btn=>{
+  btn.addEventListener("click", () => {
+    const row = btn.closest("tr");
+    const rVal = parseFloat(row.querySelector('[data-type="resistance"]').value);
+    const threshold = row.dataset.row === "primary" ? 1000 : 500; // ★ 門檻
+    btn.textContent = (rVal >= threshold) ? "G" : "NG";
+    btn.classList.remove("bg-sky-600");
+    btn.classList.add((rVal >= threshold) ? "bg-green-600" : "bg-red-600");
+  });
+});
+</script>
 </body>
 </html>
