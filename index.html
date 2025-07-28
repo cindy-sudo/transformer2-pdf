@@ -1,44 +1,131 @@
-
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8">
-  <title>變壓器測試報告填寫表單</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-  <h1>變壓器測試報告</h1>
-
-  <form id="transformerForm">
-    <div class="row">
-      <label>客戶：</label><input type="text" name="client">
-      <label>試驗日期：</label><input type="text" name="testDate">
-    </div>
-    <div class="row">
-      <label>試驗地點：</label><input type="text" name="location">
-      <label>盤面名稱：</label><input type="text" name="panelName">
-    </div>
-    <div class="row">
-      <label>製造廠：</label><input type="text" name="manufacturer">
-      <label>一次電壓(流)：</label><input type="text" name="primaryVoltage">
-    </div>
-    <div class="row">
-      <label>製造型式：</label><input type="text" name="type">
-      <label>二次電壓(流)：</label><input type="text" name="secondaryVoltage">
-    </div>
-    <div class="row">
-      <label>製造編號：</label><input type="text" name="serialNumber">
-      <label>容量：</label><input type="text" name="capacity">
-    </div>
-    <div class="row">
-      <label>製造日期：</label><input type="text" name="manufactureDate">
-    </div>
-    <button type="submit">完成表單</button>
-  </form>
-
-  <script src="script.js"></script>
+  <title>變壓器測試報告產出</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+    }
+    .table-bordered th,
+    .table-bordered td {
+      border: 1px solid black;
+    }
+  </style>
+</head>
 
+<body class="bg-gray-100 p-4">
+  <div id="report" class="bg-white p-8 max-w-4xl mx-auto shadow-lg">
+    <h1 class="text-2xl font-bold text-center mb-4">變壓器測試報告</h1>
+    <div class="grid grid-cols-2 gap-4 text-sm">
+      <div>客戶：<input class="border w-full" value="TSMC14P4"></div>
+      <div>試驗日期：<input class="border w-full" value="2025.05.14"></div>
+      <div>試驗地點：<input class="border w-full" value="C3W"></div>
+      <div>盤面名稱：<input class="border w-full" value="P4C3W-XTR-N5-409"></div>
+      <div>製造廠：<input class="border w-full" value="ABB"></div>
+      <div>一次電壓(流)：<input class="border w-full" value="22800V (△接)"></div>
+      <div>製品型式：<input class="border w-full" value="樹脂型乾式變壓器"></div>
+      <div>二次電壓(流)：<input class="border w-full" value="4264V (Y接)"></div>
+      <div>製造編號：<input class="border w-full" value="1LKR25100003653"></div>
+      <div>容量：<input class="border w-full" value="7500kVA"></div>
+      <div>製造日期：<input class="border w-full" value="2025.02"></div>
+    </div>
+
+    <h2 class="text-xl font-semibold mt-6 mb-2">絕緣電阻、耐壓特性試驗</h2>
+
+    <div class="overflow-x-auto text-sm">
+      <table class="table-auto w-full table-bordered text-center">
+        <thead>
+          <tr><th colspan="5">變壓器一次測試</th></tr>
+          <tr>
+            <th>試驗電壓(kV)</th>
+            <th>洩漏電流(30秒)</th>
+            <th>洩漏電流(60秒)</th>
+            <th>絕緣電阻(MΩ)</th>
+            <th>判定</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>12</td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td rowspan="3"><input class="border w-24 text-center" value="120000"></td>
+            <td rowspan="3">G</td>
+          </tr>
+          <tr>
+            <td>24</td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+          </tr>
+          <tr>
+            <td>36</td>
+            <td><input class="border w-16 text-center" value="0.3"></td>
+            <td><input class="border w-16 text-center" value="0.3"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <table class="table-auto w-full table-bordered text-center mt-6">
+        <thead>
+          <tr><th colspan="5">變壓器二次測試</th></tr>
+          <tr>
+            <th>試驗電壓(kV)</th>
+            <th>洩漏電流(30秒)</th>
+            <th>洩漏電流(60秒)</th>
+            <th>絕緣電阻(MΩ)</th>
+            <th>判定</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1.2</td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td rowspan="3"><input class="border w-24 text-center" value="360000"></td>
+            <td rowspan="3">G</td>
+          </tr>
+          <tr>
+            <td>2.4</td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+          </tr>
+          <tr>
+            <td>3.6</td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+            <td><input class="border w-16 text-center" value="0.1"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p class="text-xs mt-4">
+      *36kV持壓一分鐘無異常<br>
+      *高壓側絕緣電阻 &gt; 1000MΩ 屬良好<br>
+      *低壓側絕緣電阻 &gt; 500MΩ 屬良好
+    </p>
+  </div>
+
+  <div class="text-center mt-6">
+    <button onclick="generatePDF()" class="btn bg-teal-600 text-white px-6 py-2 rounded">下載 PDF</button>
+  </div>
+
+  <script>
+    async function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF("p", "pt", "a4");
+      const report = document.getElementById("report");
+      await html2canvas(report, { scale: 2 }).then(canvas => {
+        const imgData = canvas.toDataURL("image/png");
+        doc.addImage(imgData, "PNG", 20, 20, 555, 0);
+        doc.save("變壓器測試報告.pdf");
+      });
+    }
+  </script>
 </body>
+
 </html>
